@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="jp" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600&display=swap"
+	rel="stylesheet">
+<meta charset="UTF-8">
+<title>ユーザー編集</title>
+</head>
+
+
+<style>
+body {
+	margin: 0 auto;
+	width: 1200px;
+	background: #e0e5ec;
+	font-family: 'Noto Serif JP', serif;
+}
+
+.edit_user {
+	margin: 0 auto;
+	width: 900px;
+	height: 700px;
+	margin-bottom: 100px;
+}
+
+.edit_user h1 {
+	margin-top: 100px;
+	margin-bottom: 100px;
+	margin-left: 330px;
+}
+
+.edit_table {
+	margin-left: 200px;
+	height: 50px;
+}
+
+.edit_table tr {
+	width: 300px;
+	height: 50px;
+}
+
+.edit_table tr td {
+	width: 150px;
+	height: 50px;
+}
+
+.input_t {
+	width: 150px;
+	height: 30px;
+	font-size: 20px;
+}
+
+.check_box {
+	width: 30px;
+	height: 30px;
+}
+
+input:read-only {
+	background-color: gray;
+}
+
+.button {
+	width: 130px;
+	height: 40px;
+	padding: 10px 25px;
+	border: 2px solid #000;
+	font-family: 'Lato', sans-serif;
+	font-weight: 500;
+	background: transparent;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	position: relative;
+	display: inline-block;
+}
+
+.edit {
+	transition: all 0.3s ease;
+}
+
+.edit:hover {
+	box-shadow: -7px -7px 20px 0px #fff9, -4px -4px 5px 0px #fff9, 7px 7px
+		20px 0px #0002, 4px 4px 5px 0px #0001;
+}
+
+.head_right {
+	margin-left: 300px;
+	display: inline;
+}
+
+#manager_screen {
+	margin-top: 200px;
+	margin-left: 300px;
+}
+
+.d_head {
+	margin-left: 500px;
+}
+</style>
+<body>
+	<div class="d_head">
+		<a href="../manager/management" id="manager_screen"> <span>管理画面</span>
+		</a>
+	</div>
+	<form name="edit-form" class="edit_user">
+		<h1>ユーザー編集</h1>
+		<table class="edit_table">
+			<tr>
+				<td class="table_td">アカウント名</td>
+				<td><input name="useraccount" id="useraccount" class="input_t"
+					readonly></td>
+			</tr>
+			<tr>
+				<td class="table_td">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;氏名</td>
+				<td><input name="username" id="username" class="input_t"
+					required="required"></td>
+			</tr>
+			<tr>
+				<td class="table_td">&nbsp;&nbsp;パスワード</td>
+				<td><input name="userpw" id="userpw" class="input_t"
+					type="password" required="required"></td>
+			</tr>
+			<tr>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;管理者<input
+					type="hidden" name="userrole" value="1" id="s_userrole_hidden" /></td>
+				<td><input type="checkbox" name="userrole" value="0"
+					id="userrole" class="check_box"></td>
+			</tr>
+			<tr>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;無効<input
+					type="hidden" name="uservalid" value="true" id="s_uservalid_hidden" /></td>
+				<td><input type="checkbox" name="uservalid" value="false"
+					id="uservalid" class="check_box"></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td colspan="2"><button type="submit" class="button edit"
+						onclick="edit_click();">更新</button></td>
+			</tr>
+		</table>
+		<input type="hidden" name="edit_token" id="edit_token" th:value="${session.edit_token}">
+	</form>
+	
+</body>
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script th:inline="javascript">
+	$(document).ready(function() {
+		const personString = window.localStorage.getItem('userInfo3');
+		const jsonuser = JSON.parse(personString);
+		console.log("userInfo3 : " + jsonuser.account);
+		console.log("userrole : " + jsonuser.role);
+		console.log("uservalid : " + jsonuser.valid);
+		$('#useraccount').val(jsonuser.account);
+		$('#username').val(jsonuser.name);
+		var tttt = jsonuser.role;
+		var acc = "管理者";
+		console.log("管理者1: " + typeof (jsonuser.role));
+		console.log("管理者2: " + typeof (acc));
+		console.log('管理者' == jsonuser.role);
+
+		if ('管理者' == jsonuser.role) {
+			$('#userrole').prop('checked', true);
+		}
+
+		if ('無効' == jsonuser.valid) {
+			$('#uservalid').prop('checked', true);
+		}
+
+	});
+
+	function edit_click() {
+		var data;
+		var user_account = $('#useraccount').val();
+		var user_name = $('#username').val();
+		user_name = user_name.replace(/\s| /gi,''); 
+		var user_pw = $('#userpw').val();
+		var edit_token =  $('#edit_token').val(); 
+		if (user_name == "" || user_pw == "") {
+			alert("入力不足");
+		} else {
+			if (document.getElementById("userrole").checked) {
+				document.getElementById("s_userrole_hidden").disabled = true;
+				var userrole = $('#userrole').val();
+			} else {
+				document.getElementById("s_userrole_hidden").disabled = false;
+				var userrole = $('#s_userrole_hidden').val();
+			}
+
+			if (document.getElementById("uservalid").checked) {
+				document.getElementById("s_uservalid_hidden").disabled = true;
+				var uservalid = $('#uservalid').val();
+			} else {
+				document.getElementById("s_uservalid_hidden").disabled = false;
+				var uservalid = $('#s_uservalid_hidden').val();
+			}
+
+			console.log("useraccount:" + $('#useraccount').val());
+			console.log("userpw:" + $('#userpw').val());
+
+			$.ajax({
+				type : "POST",
+				url : "../user/edit",
+				data : {
+					useraccount : user_account,
+					userpw : user_pw,
+					username : user_name,
+					userrole : userrole,
+					uservalid : uservalid,
+					edit_token : edit_token
+				},
+				success : function(result) {
+				/* 	alert("result alert: " + result);
+					console.log("result: " + result); */
+					if (result == '0' || result == '異常 アクセス') {
+						alert('edit Fail. -理由: '+ result);
+					} else {
+						let url 
+						= '/manager/management';
+						location.replace(url);
+					}
+				},
+				error : function(request, status, error) {
+					alert("code:" + request.status + "\n" + "error:" + error);
+				}
+			})
+
+		}
+	}
+</script>
+
+</html>

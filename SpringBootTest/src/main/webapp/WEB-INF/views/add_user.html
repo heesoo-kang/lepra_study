@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="jp" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600&display=swap"
+	rel="stylesheet">
+<meta charset="UTF-8">
+<title>ユーザー追加</title>
+</head>
+
+<style>
+body {
+	margin: 0 auto;
+	width: 1200px;
+	background: #e0e5ec;
+	font-family: 'Noto Serif JP', serif;
+}
+
+.add_user {
+	margin: 0 auto;
+	width: 900px;
+	height: 700px;
+	margin-bottom: 100px;
+}
+
+.add_user h1 {
+	margin-top: 100px;
+	margin-bottom: 100px;
+	margin-left: 330px;
+}
+
+.add_user_table {
+	margin-left: 200px;
+	height: 50px;
+}
+
+.add_user_table tr {
+	width: 300px;
+	height: 50px;
+}
+
+.add_user_table tr td {
+	width: 150px;
+	height: 50px;
+}
+
+.button {
+	width: 130px;
+	height: 40px;
+	padding: 10px 25px;
+	border: 2px solid #000;
+	font-family: 'Lato', sans-serif;
+	font-weight: 500;
+	background: transparent;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	position: relative;
+	display: inline-block;
+}
+
+.add {
+	transition: all 0.3s ease;
+}
+
+.add:hover {
+	box-shadow: -7px -7px 20px 0px #fff9, -4px -4px 5px 0px #fff9, 7px 7px
+		20px 0px #0002, 4px 4px 5px 0px #0001;
+}
+
+.input_t {
+	width: 150px;
+	height: 30px;
+	font-size: 20px;
+}
+
+.check_box {
+	width: 30px;
+	height: 30px;
+}
+
+#manager_screen {
+	margin-top: 200px;
+	margin-left: 300px;
+}
+
+.d_head {
+	margin-left: 500px;
+}
+</style>
+<body>
+	<div class="d_head">
+		<a href="../manager/management" id="manager_screen"> <span>管理画面</span>
+		</a>
+	</div>
+
+	<form class="add_user">
+		<h1>ユーザー追加</h1>
+		<table class="add_user_table">
+			<tr>
+				<td class="table_td">アカウント名</td>
+				<td><input name="useraccount" id="useraccount" class="input_t"
+					required></td>
+			</tr>
+			<tr>
+				<td class="table_td">氏名</td>
+				<td><input name="username" id="username" class="input_t"
+					required></td>
+			</tr>
+			<tr>
+				<td class="table_td">PASSWORD</td>
+				<td><input name="userpw" id="userpw" class="input_t"
+					type="password" required autocomplete="off"></td>
+			</tr>
+			<tr>
+				<td class="table_td">管理者<input type="hidden" name="userrole"
+					value="1" id="userrole_hidden" /></td>
+				<td><input type="checkbox" name="userrole" value="0"
+					id="userrole" class="check_box"></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><button type="submit" class="button add"
+						onclick="add_click();">登録</button></td>
+			</tr>
+		</table>
+	</form>
+	<input type="hidden" name="add_token" id="add_token" th:value="${session.add_token}">
+
+</body>
+
+
+
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script th:inline="javascript">
+	$(document).ready(function() {
+
+	});
+
+	function add_click() {
+		var user_account = $('#useraccount').val();
+		var username = $('#username').val();
+		var userpw = $('#userpw').val();
+		var add_token　= $('#add_token').val();
+		if (user_account == "" || username == "" || userpw == "") {
+			alert("入力不足");
+		} else {
+			if (document.getElementById("userrole").checked) {
+				document.getElementById("userrole_hidden").disabled = true;
+				var userrole = $('#userrole').val();
+			} else {
+				document.getElementById("userrole_hidden").disabled = false;
+				var userrole = $('#userrole_hidden').val();
+			}
+
+			$.ajax({
+				type : "POST",
+				url : "../user/idchk",
+				data : {
+					useraccount : user_account,
+					username : username,
+					userpw : userpw
+				},
+				success : function(result) {
+					console.log("result: " + result);
+					if (result == 1) {
+						alert('ACCOUNT重複');
+					} else {
+						$.ajax({
+							type : "POST",
+							url : "../user/add",
+							async: false,
+							data : {
+								useraccount : user_account,
+								username : username,
+								userpw : userpw,
+								userrole : userrole,
+								add_token : add_token
+							},
+							success : function(result) {
+								if (result == '0' || result == '異常 アクセス') {
+									alert('ユーザー追加失敗　理由: '+result);
+								} else {
+									let url ='/manager/management';
+									location.replace(url);
+								}
+							},
+							error : function(request, status, error) {
+								alert("code:" + request.status + "\n"
+										+ "error:" + error);
+							}
+						})
+					}
+				},
+				error : function(request, status, error) {
+					alert("code:" + request.status + "\n" + "error:" + error);
+				}
+			})
+
+		}
+
+	}
+</script>
+</html>

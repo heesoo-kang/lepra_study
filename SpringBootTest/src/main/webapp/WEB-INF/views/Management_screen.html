@@ -1,0 +1,504 @@
+<!DOCTYPE HTML >
+<html lang="jp" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600&display=swap" rel="stylesheet">
+
+<meta charset="UTF-8">
+
+<title>管理画面</title>
+</head>
+
+<style>
+body {
+	margin: 0 auto;
+    width: 600px;
+    background: #e0e5ec;
+    font-family: 'Noto Serif JP', serif;
+}
+
+table {border-collapse: collapse;}
+tr { border: 2px solid black;}
+td { padding: 10px}
+
+H1 {
+	margin-left: 200px;
+	margin-bottom: 30px;
+}
+
+#logout {
+	margin-left: 30px;
+}
+
+#a_schdeule{
+	margin-left: 150px;
+}
+
+#new_user {
+	margin-right: 200px;
+}
+
+#user_table {
+	margin-top: 30px;
+}
+
+.search_td {
+	margin-left: 30px;
+}
+
+
+
+ul{
+	list-style:none;
+	margin-left :150px;
+}
+
+li{
+	float: left;	
+	margin-left :10px;
+}
+
+.search_button {
+
+
+  padding: 10px 30px;
+  margin-left :135px;
+}
+
+.search_init_button{
+	padding: 10px 30px;
+
+}
+
+#searchuser-form{
+	margin: 0 auto;
+	width: 600px;
+	margin-top: 50px;
+
+}
+#youkoso{
+	width:600px;
+}
+input{
+	margin-left:10px;
+}
+
+
+.button {
+  width: 130px;
+  height: 40px;
+  padding: 10px 25px;
+  border: 2px solid #000;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.search_button1 {
+  transition: all 0.3s ease;
+}
+.search_button:hover {
+   box-shadow:
+   -7px -7px 20px 0px #fff9,
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001;
+}
+
+.search_init_button {
+  transition: all 0.3s ease;
+}
+.search_init_button:hover {
+   box-shadow:
+   -7px -7px 20px 0px #fff9,
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001;
+}
+/* .span{
+	margin-left: 50px;
+} */
+.search_div >  #span_id{
+	 margin-left: 62px;
+	 margin-right: 25px;
+}
+
+.search_div >  #span_account{
+	margin-right: 10px;
+}
+.search_div >  #span_namae{
+ 	margin-left: 58px;
+	margin-right: 15px;
+}
+
+
+.edit_user_hidden{
+	height: 2px;
+}
+
+
+
+input[type="checkbox"] {
+  width: 20px; 
+  height: 20px; 
+  margin-left: 20px;
+}
+
+.schedule_move_hidden{
+	height: 2px;
+	width: 2px;
+}
+#schedule_user_hidden{
+	height: 2px;
+	width: 2px;
+}
+</style>
+
+<body>
+	<p id="youkoso" >
+		ようこそ&nbsp;&nbsp;<span th:text="${session.username}"  ></span>さん
+		<a href="#" id="a_schdeule"  onclick="document.forms['schedule_move'].submit();">スケジュール画面</a>
+		<a href="../logout" id="logout">ログアウト</a>
+		<form name="schedule_move"  class="schedule_move_hidden" action="../schedule/list" method="POST">
+	  		<input type="hidden" name="manage_token" th:value="${session.manage_token}">
+		</form>
+		<!--<a href="../schedule/list" id="a_schdeule">スケジュール画面</a>  -->
+	</p>
+	
+	
+	<H1>管理画面</H1>
+	<form name="add_user" action="../manager/add_user" method="POST">
+	  <input type="hidden" name="manage_token" th:value="${session.manage_token}">
+	</form>
+	<a href="#" onclick="document.forms['add_user'].submit();">ユーザー新規登録</a>
+	<!--  <a href="../manager/add_user?manage_token=<%#manage_token.value()%>" id="new_user">ユーザー新規登録</a>-->
+	
+	<form name="search-form" id="searchuser-form">
+		&nbsp;&nbsp;&nbsp;&nbsp;ユーザ一覧<br> 
+		<div class="search_div">
+			<span id="span_id">ID</span> <input type="text" name="userid" id="s_userid"><br>
+			<span id="span_account">アカウント名</span> <input type="text" name="useraccount" id="s_useraccount"><br>
+			<span id="span_namae">氏名</span> 
+			<input type="text" name="username" id="s_username"><br>
+			<span class="span">無効を含める</span> <input type="checkbox"  name="uservalid" value="false" id="s_userrole"><br> 
+								  <input type="hidden" name="uservalid" value="true" id="s_userrole_hidden" />
+			<button type="button"  onclick="search_click();" class="button search_button"  >検索</button>
+			<button type="button"  onclick="search_init_click();" class="button search_init_button" >初期化</button>
+		</div>
+	</form>
+	<input type="hidden" id="manage_token" th:value="${session.manage_token}">
+	<div>
+	<table border="1" width="550" height="300" id="user_table">
+		<thead>
+			<tr height="39px">
+				<th>ID</th>
+				<th>アカウント名</th>
+				<th>氏名</th>
+				<th>権限</th>
+				<th>状態</th>
+				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="user : ${userlist}" height="30px">
+				<td th:text="${user.id}" id="useraccount"></td>
+				<td th:text="${user.account}"></td>
+				<!--  <td th:text="${user.name}" id="username"><a href='../schedule/list'></a></td>-->
+				<td>
+					
+					<!--<a href="#"  th:text="${user.name}" onclick="document.forms['schedule_user'].submit();"></a>  -->
+					<a href="#"  th:text="${user.name}" onclick="$(this).next().submit();"></a>
+					<form name="schedule_user" id="schedule_user_hidden" action="../schedule/list"   method="POST">
+		  				<input type="hidden" name="manage_token" th:value="${session.manage_token}">
+						<input type="hidden" name="searchuser_name" th:value="${user.name}">
+						<input type="hidden" name="searchuser_account" th:value="${user.account}">
+					</form>
+				<!-- <a th:href="@{../schedule/list(searchusername = ${user.name},searchuseraccount= ${user.account})}" th:text="${user.name}"></a> -->
+				</td>
+				<td th:if="${user.role == '0'}" id="role">管理者</td>
+				<td th:if="${user.role == '1'}">一般</td>
+				<td th:if="${user.valid == 'true'}">有効</td>
+				<td th:if="${user.valid == 'false'}">無効</td>
+				<td>
+					<a href="#" class="edit_user" onclick="document.forms['edit_user'].submit();">編集</a>
+					<form name="edit_user" class="edit_user_hidden" action="../manager/edit_user" method="POST">
+		  				<input type="hidden" name="manage_token" th:value="${session.manage_token}">
+					</form>
+				</td>
+				<!-- <td><a href="../manager/edit_user" class="edit_user" >編集</a></td>	 -->
+			</tr>
+		</tbody>
+	</table>
+	<ul class="pagination">
+
+	</ul>
+	</div>
+</body>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		pagination();
+
+		jQuery('.pagination li:first-child').addClass("disabled");
+		var table = document.getElementById('user_table');
+		var rowList = table.rows;
+
+	});
+	
+	function search_init_click(){
+		$.ajax({
+			type : 'POST',
+			url : "../user/search_init",
+			processData : false,
+			data : null,
+			success : function(result) {
+				console.log("result : "+result.length);
+	
+	
+				console.log("result : "+result== "");
+				if (result.length>0) {
+					$('#user_table > tbody').empty();
+					for(var i= 0; i< result.length; i++){
+						str = '<tr>'
+						str += "<td >" + result[i]["id"] + "</td>";
+						str += "<td >" + result[i]["account"] + "</td>";
+						str += "<td ><a href = '../schedule/list'>" + result[i]["name"]
+								+ "</a></td>";
+
+						if (result[i]["role"] == "0") {
+							str += "<td >" + "管理者" + "</td>";
+						} else {
+							str += "<td >" + "一般" + "</td>";
+						}
+						if (result[i]["valid"] == "true") {
+							str += "<td >" + "有効" + "</td>";
+						} else {
+							str += "<td >" + "無効" + "</td>";
+						}
+						str += "<td ><a href = '../manager/edit_user' class='edit_user' >" + "編集"+ "</a></td>";
+						str += "</tr>";
+						
+						$('#user_table > tbody').append(str);
+						pagination();
+					}
+				} else {
+					console.log("result else: "+result);
+					alert("該当ユーザーなし");
+					pagination();
+				}
+			},error : function() {
+				alert("error");
+			}
+		})
+		document.getElementById("s_userrole_hidden").disabled = false;
+		console.log("paging 2");
+
+	}
+	
+	function search_click() {
+		if (document.getElementById("s_userrole").checked) {
+			document.getElementById("s_userrole_hidden").disabled = true;
+		}
+		console.log($('#searchuser-form').val());
+		var formData = new FormData();
+		console.log("formData.length1: "+formData.length);
+		var formData = $('#searchuser-form').serialize();
+		console.log("formData.length2: "+formData.length);
+		
+		$.ajax({
+			type : 'GET',
+			url : "../user/getSearchuser",
+			processData : false,
+			data : formData,
+			success : function(result) {
+				console.log("result : "+result.length);
+				console.log("result : "+result== "");
+				if (result.length>0) {
+					$('#user_table > tbody').empty();
+					 for(var i= 0; i< result.length; i++){
+						str = '<tr>'
+						str += "<td >" + result[i]["id"] + "</td>";
+						str += "<td >" + result[i]["account"] + "</td>";
+						str += "<td ><a href = '../schedule/list'>" + result[i]["name"]+ "</a></td>";
+
+						if (result[i]["role"] == "0") {
+							str += "<td >" + "管理者" + "</td>";
+						} else {
+							str += "<td >" + "一般" + "</td>";
+						}
+						if (result[i]["valid"] == "true") {
+							str += "<td >" + "有効" + "</td>";
+						} else {
+							str += "<td >" + "無効" + "</td>";
+						}
+						str += "<td ><a href = '../manager/edit_user' class='edit_user' >" + "編集"+ "</a></td>";
+						str += "</tr>";
+						$('#user_table > tbody').append(str);
+						pagination();
+					} 
+				} else {
+					console.log("result else: "+result);
+					alert("該当ユーザーなし");
+					pagination();
+				}
+			},error : function() {
+				alert("error");
+				pagination();
+			}
+		})
+		document.getElementById("s_userrole_hidden").disabled = false;
+	}
+	
+	$(document).on('click','.edit_user', function() {
+
+		var tr = $(this).parent().parent();
+		var td = tr.children();
+		
+		console.log("tr:"+tr)
+		
+		var test =$(this).closest('tr');
+		console.log(test);
+		
+		var col1 = test.find('td:eq(1)').text();
+
+		var useraccount = td.eq(1).text();
+		var username = td.eq(2).text();
+		username = username.split("\n").join("");
+		console.log(username);
+		username = username.split(" ").join("");
+		username = username.split("\t").join("");
+		console.log(username);
+		var userrole = td.eq(3).text();
+		var uservalid= td.eq(4).text();
+		console.log("username: ",username);
+		const userInfo = {
+			account : useraccount,
+			name : username,
+			role : userrole,
+			valid : uservalid,
+		};
+		const userInfo2 = JSON.stringify(userInfo);
+		console.log("userInfo2: ",userInfo2)
+		window.localStorage.setItem('userInfo3', userInfo2);
+	}) 
+	
+
+	function pagination() {
+		console.log("paging start");
+		
+		jQuery('.pagination ').empty();
+		
+		const table = document.getElementById('user_table');
+		const totalRowCnt = table.rows.length;
+		
+		console.log("totalRowCnt: "+totalRowCnt);
+		var req_num_row = 5;
+
+		var $tr = jQuery('#user_table > tbody tr');
+		//var ts = ('#user_table > tbody tr');
+		console.log("$tr: "+$tr);
+		console.log("$tr json: "+JSON.stringify($tr));
+		//console.log("$ts: "+ts);
+		var total_num_row = $tr.length;
+		console.log("$total_num_row: "+total_num_row);
+		var num_pages = 0;
+		if (total_num_row % req_num_row == 0) {
+			num_pages = total_num_row / req_num_row;
+		}
+		
+		if (total_num_row % req_num_row >= 1) {
+			num_pages = total_num_row / req_num_row;
+			num_pages++;
+			num_pages = Math.floor(num_pages++);
+		}
+
+		jQuery('.pagination').append("<li><a class=\"prev\"> << </a></li>");
+		
+		for (var i = 1; i <= num_pages; i++) {
+			jQuery('.pagination').append("<li><a>" + i + "</a></li>");
+		}
+		
+		jQuery('.pagination').append("<li><a class=\"next\"> >> </a></li>");
+		$tr.each(function(i) {
+			jQuery(this).hide();
+			if (i + 1 <= req_num_row) {
+				$tr.eq(i).show();
+			}
+		});
+		
+		jQuery('.pagination a').click('.pagination-link', function(e) {
+			e.preventDefault();
+			$tr.hide();
+			var page = jQuery(this).text();
+			var temp = page - 1;
+			var start = temp * req_num_row;
+			var current_link = temp;
+
+			jQuery('.pagination li').removeClass("active");
+			jQuery(this).parent().addClass("active");
+
+			for (var i = 0; i < req_num_row; i++) {
+				$tr.eq(start + i).show();
+			}
+
+			if (temp >= 1) {
+				jQuery('.pagination li:first-child').removeClass("disabled");
+			} else {
+				jQuery('.pagination li:first-child').addClass("disabled");
+			}
+		});
+
+		jQuery('.prev').click(function(e) {
+			e.preventDefault();
+			var page = 1;
+			var temp = page - 1;
+			var start = temp * req_num_row;
+			var current_link = temp;
+
+			jQuery('.pagination li').removeClass("active");
+			jQuery(this).parent().addClass("active");
+
+			for (var i = 0; i < req_num_row; i++) {
+				$tr.eq(start + i).show();
+			}
+
+			if (temp >= 1) {
+				jQuery('.pagination li:first-child').removeClass("disabled");
+			} else {
+				jQuery('.pagination li:first-child').addClass("disabled");
+			}
+		});
+
+		jQuery('.next').click(function(e) {
+			e.preventDefault();
+			
+			var page = num_pages;
+			var temp = page - 1;
+			var start = temp * req_num_row;
+			var current_link = temp;
+
+			jQuery('.pagination li').removeClass("active");
+			jQuery(this).parent().addClass("active");
+
+			for (var i = 0; i < req_num_row; i++) {
+				$tr.eq(start + i).show();
+			}
+
+			if (temp >= 1) {
+				jQuery('.pagination li:first-child').removeClass("disabled");
+			} else {
+				jQuery('.pagination li:first-child').addClass("disabled");
+			}
+			
+		});
+	}
+</script>
+</html>

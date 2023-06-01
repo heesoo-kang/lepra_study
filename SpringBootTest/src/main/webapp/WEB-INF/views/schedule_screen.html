@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="jp" xmlns:th="http://www.thymeleaf.org">
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>スケジュール画面</title>
+</head>
+
+<style>
+body {
+	margin: 0 auto;
+	width: 1200px;
+	margin-top: 50px;
+	background: #e0e5ec;
+	font-family: 'Noto Serif JP', serif;
+
+}
+
+H1{
+	margin-top: 50px;
+}
+
+#anchor {
+	margin-right: 100px;
+}
+
+#logout {
+	margin-left: 300px;
+}
+table {border-collapse: collapse;}
+
+tr { border: 2px solid black;}
+td { padding: 10px}
+
+/* tr.ntd-child(odd) {background-color: #e6f1ff ;}
+tr.ntd-child(even) {background-color: #f0f7ff ;} */
+
+.d_head .head_left{
+	display: inline;
+	margin-left: 300px;
+}
+
+.head_right{
+margin-left: 300px;
+	display: inline;
+}
+.d_body{
+
+	margin-left: 280px;
+	
+}
+
+.d_body H1{
+
+	margin-left: 180px;
+	
+}
+#schedule_table{
+	margin-top: 50px;
+}
+
+select {
+  width:80px;
+  height:40px;
+  font-size:20px;
+}
+input{
+	width:190px;
+    height:40px;
+    font-size:20px;
+}
+
+.button {
+  width: 130px;
+  height: 40px;
+  padding: 10px 25px;
+  border: 2px solid #000;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.Display_button1 {
+  transition: all 0.3s ease;
+}
+.Display_button:hover {
+   box-shadow:
+   -7px -7px 20px 0px #fff9,
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001;
+}
+
+.insert_button {
+  transition: all 0.3s ease;
+}
+.insert_button:hover {
+   box-shadow:
+   -7px -7px 20px 0px #fff9,
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001;
+}
+
+</style>
+<body >
+	<div class="d_head">
+		<div class="head_left">
+				ようこそ&nbsp;&nbsp;<span th:text="${session.username}"></span>さん<!-- 
+				<input type="hidden" th:value="${session.userid}" id="session_userid">
+				<input type="hidden" th:value="${session.userpower}" id="session_userpower"> -->
+		</div>
+		<div class="head_right">
+
+			<a href="../manager/management" id="userpower" >
+				<span th:style="${session.userpower == 'Y' ? 'style= display:block' : 'style= display:none'}">管理画面</span>
+			</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="../logout">ログアウト</a>
+		</div>
+	</div>
+
+	<div class="d_body">
+		<h1>スケジュール画面</h1>
+		<div>
+			<select id="yearBox"></select>&nbsp; <span  style="font: bold 1.5em/1em Georgia, serif ;">年</span>
+			&nbsp;&nbsp;&nbsp; 
+			<select id="monthBox" onchange="OnChangeday(this)"></select>&nbsp; <span style="font: bold 1.5em/1em Georgia, serif ;">月</span>
+			&nbsp; <button class="button Display_button" type="submit" onclick="display_click();">表示</button>
+			<br> 
+			<br>
+			<select id="dayBox"></select> <span style="font: bold 1.5em/1em Georgia, serif ;">日</span>
+			&nbsp;&nbsp;&nbsp; <input name="schedule" id="schedule">
+			&nbsp; <button class="button insert_button" type="submit" onclick="insert_click();">登録</button>
+			<input type="hidden" id="csrfToken" value="${session.csrfToken}">
+			<table  border="1" id="schedule_table"  >
+				<tbody id="schedule_tbody"></tbody>
+			</table> 
+		</div>
+	</div>
+	<input type="hidden" name="schedule_Token" id ="schedule_Token" th:value="${session.schedule_Token}">
+	
+</body>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script th:inline="javascript"  >
+	$(document).ready(function() {
+		var date = new Date();
+		var selYear = date.getFullYear();
+		const form = /*[[${schedulelist}]]*/"form";
+		var loginuser = '[[${session.userid}]]';
+		
+		
+		var loginuser2 = '[${session.aaaaa}]';
+		var searchuser_name = '[[${session.searchuser_name}]]';
+		var searchuser_account = '[[${session.search_useraccount}]]';
+
+		var formlist = JSON.stringify(form);
+	
+		for (var i=0;i<form.length;i++){
+			console.log("schedule: " + form[i]["schedule"] + ", date: " +form[i]["date"]);		
+		}
+		
+		getYears(selYear);
+		$('#yearBox').val(selYear);
+		
+		getMonth();
+		getDay($('#yearBox').val(),$('#monthBox').val());
+		
+		schedule_table(form);
+
+	});
+	
+	function XSSCheck(str) {
+		
+		str = str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+		str = str.replaceAll("\\(", "&#40;").replaceAll("\\)", "&#41;");
+		str = str.replaceAll("'", "&#39;");
+	    str = str.replaceAll("eval\\((.*)\\)", "");
+	    str = str.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"");
+		console.log("str: "+str);
+		
+	    return str;
+	}
+	
+	function OnChangeday(e) {	
+		  const value = e.value;
+		  const form = /*[[${schedulelist}]]*/"form";
+		  console.log("[[${schedulelist: "+form);
+		  $('#dayBox').empty();
+		  getDay($('#yearBox').val(),$('#monthBox').val());
+		  
+		  //schedule_table(form);
+		  /* var days = $('#dayBox option').size(); 
+		  const rowCnt = days;  
+		  var html ='';
+		  var formlength = form.length;
+	   	  html+= '<tr  height="30px;">';
+		  
+		  $('#schedule_table > #schedule_tbody').empty();
+			for(var i = 1 ; i<= rowCnt; i++){  //1 ~ month lastday 
+	   			html+= '<td width="40px" class="day_td"  name="day_td2" >'+ i +'</td>';
+	   			html+= '<td width="80px" id="schedule_td'+i+'" name="schedule_td2" ></td>';	
+	   			html+= '</tr>';	
+	   		}	
+			$('#schedule_table > #schedule_tbody').append(html);
+			
+		 	if (formlength>0){
+				for(var j = 0 ; j<formlength; j++){
+					let result = form[j]["date"].slice(8);
+					for(var i = 1 ; i<= rowCnt; i++){  
+		    			if (result == i){
+		    				if($('#schedule_td'+i).text()==""){
+		    					$('#schedule_td'+i).append(form[j]["schedule"]);
+		    				}else{
+		    					$('#schedule_td'+i).append(",");
+		    					$('#schedule_td'+i).append(form[j]["schedule"]);
+		    				}
+		    				//console.log("schedule_td: "+ $("#schedule_td").text());
+		    				break;
+		    			}
+					}
+				}
+			}    */
+	}
+	function  insert_click() {
+		
+		var loginuser = '[[${session.userid}]]';
+
+		var searchuser_name = '[[${session.searchuser_name}]]';
+		var searchuser_account = '[[${session.search_useraccount}]]';
+		
+		var year = $('#yearBox').val();
+		var month =  $('#monthBox').val();
+		var day = $('#dayBox').val(); 
+		var schedule = $('#schedule').val();
+		var schedule_Token = $('#schedule_Token').val();
+		const searchParams = new URLSearchParams(location.search);	
+	
+		console.log("searchParams : "+searchParams); 
+		console.log("XSSCheck before : "+schedule); 
+		schedule = XSSCheck(schedule);
+		console.log("XSSCheck after : "+schedule); 
+		
+	
+		loginuser = loginuser.replace(/\"/gi, "");
+		searchuser_name = searchuser_name.replace(/\"/gi, "");
+		searchuser_account = searchuser_account.replace(/\"/gi, "");
+
+
+		if(searchuser_name == "null"){
+			$.ajax({
+				type : 'POST',
+				url : "../schedule/insert",
+				data :  {year : year, month : month, day:day ,useraccount:loginuser ,schedule:schedule, writter:loginuser, token:schedule_Token},  
+				success : function(form) {
+					//console.log("data:"+ form);
+					display_click();
+				},
+				error : function() {
+					alert("error");
+				}
+			}) 
+		}else{ //lgoin user != searchuser
+			console.log("searchParams.get useraccount:  "+searchParams.get("searchuseraccount"));
+			var useraccount = searchParams.get("searchuseraccount"); 
+
+			$.ajax({
+				type : 'POST',
+				url : "../schedule/insert",
+				data :  {year : year, month : month, day:day ,useraccount:searchuser_account ,schedule:schedule, writter:loginuser, token:schedule_Token },  
+				success : function(form) {
+				//	console.log("data:"+ form);
+					display_click();
+				},
+				error : function() {
+					alert("error");
+				}
+			}) 
+		}
+	}
+	
+	
+	
+	function  display_click() {
+		
+		var year = $('#yearBox').val();
+		var month =  $('#monthBox').val();
+		var days = $('#dayBox option').size(); 
+		const rowCnt = days;  
+   		const columnCnt = 2;
+   		var html ='';
+   		
+   		html+= '<tr  height="30px;">';
+			
+/* 		const searchParams = new URLSearchParams(location.search);	
+		const urlParams = new URL(location);
+		console.log(searchParams== ""); */
+
+		console.log("year " + year, "month " + month);
+		
+		var loginuser = '[[${session.userid}]]';
+		var searchuser_name = '[[${session.searchuser_name}]]';
+		var searchuser_account = '[[${session.search_useraccount}]]';
+		
+		loginuser = loginuser.replace(/\"/gi, "");
+		searchuser_name = searchuser_name.replace(/\"/gi, "");
+		searchuser_account = searchuser_account.replace(/\"/gi, "");
+		
+		if(searchuser_name == "null"){  //urlにパラメータデータなし
+			$.ajax({
+				type : 'POST',
+				url : "../schedule/getSearchschedule",
+				data :  {year : year, month : month},  
+				success : function(form) {
+					console.log("data:"+ form);
+					var formlength = form.length;
+					console.log("formlength:"+ formlength);
+					if(form){
+						$('#schedule_table > #schedule_tbody').empty();
+						for(var i = 1 ; i<= rowCnt; i++){  //1 ~ month lastday 
+				   			html+= '<td width="40px" class="day_td"  name="day_td2" >'+ i +'</td>';
+				   			html+= '<td width="80px" id="schedule_td'+i+'" name="schedule_td2" ></td>';	
+				   			html+= '</tr>';	
+				   		}	
+						$('#schedule_table > #schedule_tbody').append(html);
+						
+					 	if (formlength>0){
+							for(var j = 0 ; j<formlength; j++){
+								let result = form[j]["date"].slice(8);
+								for(var i = 1 ; i<= rowCnt; i++){  
+					    			if (result == i){
+					    				if($('#schedule_td'+i).text()==""){
+					    					$('#schedule_td'+i).append(form[j]["schedule"]);
+					    				}else{
+					    					$('#schedule_td'+i).append(",");
+					    					$('#schedule_td'+i).append(form[j]["schedule"]);
+					    				}
+					    				break;
+					    			}
+								}
+							}
+						} 
+					}
+				},
+				error : function() {
+					alert("error");
+				}
+			}) 
+		}else{ //lgoin user != searchuser
+			/* console.log("urlParams: "+urlParams);
+			console.log("searchParams: "+searchParams); */
+			
+			var searchuser = searchuser_account;
+			
+	/* 		console.log("searchParams.get searchuseraccount test:  "+searchParams.get("searchuseraccount")); 
+
+			searchuser=searchParams.get("searchuseraccount"); */
+			console.log("searchuser: "+searchuser);
+			
+			$.ajax({
+				type : 'POST',
+				url : "../schedule/getSearchschedule",
+				data :  {year : year, month : month, searchuser : searchuser_account },  
+				success : function(form) {
+					console.log("data:"+ form);
+					var formlength = form.length;
+					console.log("formlength:"+ formlength);
+					if(form){
+						$('#schedule_table > #schedule_tbody').empty();
+						for(var i = 1 ; i<= rowCnt; i++){  //1 ~ month lastday 
+				   			html+= '<td width="40px" class="day_td"  name="day_td2" >'+ i +'</td>';
+				   			html+= '<td width="80px" id="schedule_td'+i+'" name="schedule_td2" ></td>';	
+				   			html+= '</tr>';	
+				   		}	
+						$('#schedule_table > #schedule_tbody').append(html);
+						
+					 	if (formlength>0){
+							for(var j = 0 ; j<formlength; j++){
+								let result = form[j]["date"].slice(8);
+								for(var i = 1 ; i<= rowCnt; i++){  
+					    			if (result == i){
+					    				if($('#schedule_td'+i).text()==""){
+					    					$('#schedule_td'+i).append(form[j]["schedule"]);
+					    				}else{
+					    					$('#schedule_td'+i).append(",");
+					    					$('#schedule_td'+i).append(form[j]["schedule"]);
+					    				}
+					    				break;
+					    			}
+								}
+							}
+						} 
+					}
+				},
+				error : function() {
+					alert("error");
+				}
+			}) 
+		}	
+	}
+	function getYears(getY) {
+		$("#yearBox option").remove();
+		var stY = Number(getY);
+		var enY = Number(getY) + 7;
+
+		for (var y = stY; y <= enY; y++) {
+			$('#yearBox').append(
+					"<option value='"+y+"'>" + y + "</option>");
+		}
+	}
+	function getMonth() {
+		for (var m = 1; m <= 12; m++) {
+			$('#monthBox').append(
+					"<option value='"+m+"'>" + m + "</option>");
+		}
+		var now= new Date();
+		$('#monthBox').val(now.getMonth()+1);
+	}
+	function getDay(getY,getM) {
+		var date = new Date(getY, getM, 0);
+		var today = date.getDate()
+		
+		for (var d = 1; d<= today;d++){
+			$('#dayBox').append(
+					"<option value='"+d+"'>" + d+ "</option>");  //month day 
+		}	
+	}
+	
+    function schedule_table(form) {	
+  		console.log($('#yearBox').val());
+  		console.log($('#monthBox').val());
+  		console.log(form.length);
+  		var formlength = form.length;
+  		var days = $('#dayBox option').size(); //month last day check 
+  		console.log(days);
+  		
+  		const rowCnt = days;  
+  		console.log("days: "+days);
+  		const columnCnt = 2; //day - schedule
+  		var html ='';
+  		
+  		html+= '<tr  height="30px;">';
+  		var j = 0;
+  		for(var i = 1 ; i<= rowCnt; i++){  //1 ~ month lastday 
+  			html+= '<td width="40px" class="day_td"  name="day_td2" >'+ i +'</td>';
+  			html+= '<td width="80px" id="schedule_td'+i+'" name="schedule_td2" ></td>';	
+  			html+= '</tr>';	
+  		}	
+  		$('#schedule_table > #schedule_tbody').append(html);
+  		
+ 	    	if (formlength>0){
+			for(var j = 0 ; j<formlength; j++){
+				let result = form[j]["date"].slice(8);
+				for(var i = 1 ; i<= rowCnt; i++){  
+	    			if (result == i){
+	    				if($('#schedule_td'+i).text()==""){
+	    					$('#schedule_td'+i).append(form[j]["schedule"]);
+	    				}else{
+	    					$('#schedule_td'+i).append(",");
+	    					$('#schedule_td'+i).append(form[j]["schedule"]);
+	    				}
+	    				break;
+	    			}
+				}
+			}
+		}
+   	}
+	
+</script>
+
+</html>

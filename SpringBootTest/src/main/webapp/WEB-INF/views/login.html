@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="jp" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600&display=swap"
+	rel="stylesheet">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<title>ログイン</title>
+
+<style>
+body {
+	background: #e0e5ec;
+	margin: 0 auto;
+	width: 500px;
+	margin-top: 200px;
+	font-family: 'Noto Serif JP', serif;
+}
+
+.title h1 {
+	margin-left: 120px;
+	margin-bottom: 130px;
+}
+
+input {
+	width: 220px;
+	height: 40px;
+	font-size: 20px;
+}
+
+button {
+	margin: 20px;
+	outline: none;
+}
+
+.btn-hover {
+	width: 130px;
+	height: 40px;
+	padding: 10px 25px;
+	border: 2px solid #000;
+	font-family: 'Lato', sans-serif;
+	font-weight: 500;
+	background: transparent;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	position: relative;
+	display: inline-block;
+	margin-left: 150px;
+}
+
+.submit_button1 {
+	transition: all 0.3s ease;
+}
+
+.submit_button1:hover {
+	box-shadow: -7px -7px 20px 0px #fff9, -4px -4px 5px 0px #fff9, 7px 7px
+		20px 0px #0002, 4px 4px 5px 0px #0001;
+}
+</style>
+</head>
+<body>
+	<form class="title" name="login_form" id="login_form">
+		<h1>ログイン画面</h1>
+		<table>
+			<tr>
+				<td>アカウント名</td>
+				<td><input name="useraccount" id="useraccount" required></td>
+			</tr>
+			<tr>
+				<td>PASSWORD</td>
+				<td><input name="userpw" id="userpw" type="password" required
+					autocomplete="off"></td>
+			</tr>
+			<tr>
+				<td colspan="2"><button class="btn-hover submit_button"
+						type="button" id="submit_bth" onclick="InputCheck()">ログイン</button></td>
+			</tr>
+
+		</table>
+	</form>
+	<input type="hidden" id="login_token" th:value="${session.login_token}">
+</body>
+
+<script th:inline="javascript">
+	$(document).ready(function() {
+		history.replaceState({}, null, location.pathname);
+		//alert("login_token:"+$('#login_token').val());
+
+	});
+
+	function InputCheck() {
+		var ui = $('#useraccount').val();
+		var up = $('#userpw').val();
+		console.log("useraccount:" + $('#useraccount').val());
+		console.log("userpw:" + $('#userpw').val());
+		console.log("login_token:" + $('#login_token').val());
+		var token = $('#login_token').val();
+		if (ui == "" || up == "") {
+			alert("入力不足");
+		} else {
+			$.ajax({
+				type : "POST",
+				url : "/user/login",
+				data : {
+					useraccount : ui,
+					userpw : up,
+					token : token
+				}
+			}).done(function(result) {
+				if (result == 'loginFail') {
+					alert('loginFail.');
+				} else {
+					var teststr = result.tokens;
+
+					if (result.valid != "true") {
+						alert("無効ユーザー");
+					} else {
+						if (result.role == 0) {
+							let url = '/manager/management';
+							location.replace(url);
+
+						} else {
+							let url = '/schedule/list';
+							location.replace(url);
+						}
+					}
+				}
+			}).fail(function(request, status, error) {
+				if (request.status == 500) {
+					alert("登録されていないユーザーです。");
+				} else {
+					alert("code:" + request.status + "\n" + "error:" + error);
+				}
+
+			});
+			//alert("test");
+			/*
+			$.ajax({
+			      type : "POST",
+			      url : "/user/login",       
+			      data : {useraccount : ui, userpw : up}, 
+			      success : function(result) {
+			         if (result == 'loginFail') {
+			              alert('loginFail.');
+			          } else {
+			        	  if(result=="0"){
+			        		  let url ='/manager/management';
+			            	  location.replace(url);
+			        	  }else{
+			        		  let url ='/schedule/list';
+			            	  location.replace(url);
+			        	  }
+			          }
+			      },
+			      error : function(request, status, error) {
+			          alert("code:" + request.status + "\n" + "error:" + error);
+			      }
+			  })
+			 */
+		}
+	}
+</script>
+
+</html>
