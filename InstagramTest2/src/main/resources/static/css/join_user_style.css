@@ -1,0 +1,165 @@
+@charset "UTF-8";
+
+
+body {
+	background-color: #f9f9f9;
+}
+
+.contentsWrap {
+	margin: 10px auto;
+	max-width: 340px;
+	border: none;
+
+	text-align: center;
+}
+
+.joinWindow {
+	background-color: #fcfcfc;
+	padding: 10px auto;
+	border: 1px solid #dfdfdf;
+	border-radius: 3px;
+}
+
+.joinWindow input {
+	margin-bottom: 10px;
+	background-color: #f5f5f5;
+	height: 37px;
+	padding: 10px 10px;
+	box-sizing: border-box;
+	border: 1px solid #eaeaea;
+	border-radius: 4px;
+}
+
+.joinWindow input::placeholder {
+	font-size: 12px;
+	font-weight: 100;
+}
+
+.joinWindow input:focus {
+	outline: none;
+	border: 1px solid #aaaaaa;
+	border-radius: 4px;
+}
+
+.ordinaryLogin {
+	height: 37px;
+	margin-bottom: 10px;
+	box-sizing: border-box;
+	border: 0px;
+	border-radius: 5px;
+	color: #ffffff;
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.unactivatedJoinColor {
+	background-color: #acd5e8;
+}
+
+.activatedJoinColor {
+	background-color: #00aeff;	
+}
+
+.joinWindow * {
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#instaLogo {
+	height: 130px;
+}
+
+.inlineToBlock {
+	display: block;
+}
+
+
+.leftHr {
+	float: left;
+	width: 35%;
+	box-sizing: border-box;
+}
+
+.or {
+	float: left;
+	width: 17%;
+	margin: 1px 5%;
+	font-size: 13px;
+	box-sizing: border-box;
+	color: #737373;
+	font-size: 13px;
+	font-weight: 700;
+	margin: 0px 15px;
+}
+
+.rightHr {
+	float: right;
+	width: 35%;
+	box-sizing: border-box;
+}
+
+.facebookLogin {
+	height: 37px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	box-sizing: border-box;
+	border: 0px;
+	border-radius: 5px;
+	color: #ffffff;
+	font-size: 15px;
+	font-weight: 700;
+	background-color: #00aeff;
+}
+
+.facebookIcon {
+	width: 20px;
+}
+
+.haveAccount {
+	background-color: #fcfcfc;
+	margin-top: 10px;
+	padding: 15px;
+	border: 1px solid #dfdfdf;
+	border-radius: 3px;
+}
+
+.haveAccount p {
+	font-size: 14px;
+	font-weight: 300;
+	color: #333333;
+}
+
+.haveAccount p a {
+	font-weight: 600;
+	color: #248ae3;
+}
+
+.noneunderline {
+	text-decoration: none;
+}
+
+.forget_idpw{
+	font-size: 12px;
+	color: #FF0000;
+	font-weight: lighter;
+	display: none;
+}
+
+.unactive{
+	display: none;
+}
+
+.active{
+	display: block;
+}
+
+.Description_head{
+	margin: 0 auto;
+	font-size: 18px;
+	color: #737373;
+}
+.Description_foot{
+	font-size: 12px;
+	color: #737373;
+}

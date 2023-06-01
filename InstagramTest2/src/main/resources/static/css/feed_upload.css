@@ -1,0 +1,73 @@
+@charset "UTF-8";
+
+
+
+form{
+	float:left;
+}
+
+.login_user{
+	text-align: center;
+}
+
+.feed_up_full_body{
+	
+	margin: 0 auto;
+	width: 600px;
+	height: 450px;
+}
+.uplad_header{
+	width: 100%;
+	height: 10%;
+	text-align: center;
+}
+.feed_up_form{
+	
+	width: 100%;
+	height: 100%;
+}
+
+.feed_up_form textarea{
+	width: 50%;
+    height:135px;
+    border: none;
+    resize: none;
+	
+}
+
+.feed_up_form label {
+	height: 45px;
+/* 	margin-top: 10px;
+	margin-bottom: 10px;
+	box-sizing: border-box; */
+	border: 0px;
+	border-radius: 5px;
+	color: #ffffff;
+	font-size: 15px;
+	font-weight: 700;
+	background-color: #00aeff;
+}
+.filebox .upload-display {  /* 이미지가 표시될 지역 */
+  display: inline-block;
+  width: 45%;
+  margin-bottom: 5px;
+}
+.preview-image{
+	
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+@media(min-width: 300px) { 
+  .filebox .upload-display {
+   /*  display: inline-block; */
+    margin-right: 5px;
+    margin-bottom: 0;
+  }
+}
+
+.upload-thumb{
+	width: 50%;
+	height: 50%;
+	float: left;
+}
