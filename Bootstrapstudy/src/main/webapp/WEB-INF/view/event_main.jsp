@@ -17,7 +17,13 @@
 <link
 	href="https://fonts.googleapis.com/css2?family=Reggae+One&display=swap"
 	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap"
+	rel="stylesheet">
 
+<link
+	href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+P+One&display=swap"
+	rel="stylesheet">
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
@@ -29,20 +35,75 @@
 
 </head>
 <body>
-
-
-	<div id="chocolate_rains"></div>
-
 	<div class="cover">
 		<img class="animate__animated animate__tada" id="animate_id" alt=""
 			src="resources/video/any2.gif" onclick="imgclick()">
 	</div>
+
 	<div class="content">
-		<button class="learn-more" id="message_button" onclick="message()">メッセージ</button>
-		<button class="learn-more" id="picture_button">写真</button><br>
-		<p class="typing"></p>
+		<button class="learn-more animate__animated" id="message_button"
+			onclick="message()">メッセージ</button>
+		<button class="learn-more animate__animated" id="picture_button"
+			onclick="picture()">写真</button>
+		<br> <br>
+		<p class="typing" id="typingafter" onclick="messagehidden()"></p>
 	</div>
-	
+
+	<div id="picturediv">
+		<div class="picturediv num1">
+			<img class="animate__animated animate__slideInLeft" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+		<div class="picturediv num2 ">
+			<img class="animate__animated animate__slideInRight" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+		<div class="picturediv num3">
+			<img class="animate__animated animate__slideInLeft" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+		<div class="picturediv num4">
+			<img class="animate__animated animate__slideInRight" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+		<div class="picturediv num5">
+			<img class="animate__animated animate__slideInLeft" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+		<div class="picturediv num6">
+			<img class="animate__animated animate__slideInRight" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+		<div class="picturediv num7">
+			<img class="animate__animated animate__slideInLeft" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+		<div class="picturediv num8">
+			<img class="animate__animated animate__slideInRight" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+		<div class="picturediv num9">
+			<img class="animate__animated animate__slideInLeft" id="animate_id"
+				alt="" src="resources/img/back-rose1.jpg"
+				onclick="pictureclick(this)">
+		</div>
+
+	</div>
+	<div class='bigPictureWrapper' onclick="bigclose()">
+		<div class='bigPicture'></div>
+	</div>
+
+	<div id="chocolate_rains"></div>
+
+
 </body>
 
 </html>

@@ -30,22 +30,27 @@ $(document).ready(function() {
 });
 function imgclick() {
 	document.getElementById("animate_id").classList.remove('animate__tada');
-	document.getElementById("animate_id").classList.add('animate__zoomOutUp');
+	document.getElementById("animate_id").classList.add('animate__flipOutY');
 
-	
-	document.getElementById("message_button").style.display = 'inline-block'; 		
-	document.getElementById("picture_button").style.display = 'inline-block'; 		
 
-  
+	setTimeout(function() {
+		document.getElementById("message_button").classList.add('animate__slideInDown');
+		document.getElementById("picture_button").classList.add('animate__slideInDown');
+		document.getElementById("message_button").style.display = 'inline-block';
+		document.getElementById("picture_button").style.display = 'inline-block';
+		document.getElementById("picturediv").style.display = 'none';
+	}, 1500);
 };
 
 
 function message() {
+	document.getElementById("message_button").style.display = 'none';
+	document.getElementById("picture_button").style.display = 'none';
 	var typingBool = false;
 	var typingIdx = 0;
 
 	// 타이핑될 텍스트를 가져온다 
-	var typingTxt = "ここはコメントのメッセージ部分です。よろしくお願いいたします。"
+	var typingTxt = "ここはコメントのメッセージ部分です。よろしくお願いいたします。 ここはコメントのメッセージ部分です。よろしくお願いいたします。 ここはコメントのメッセージ部分です。よろしくお願いいたします。"
 
 	typingTxt = typingTxt.split(""); // 한글자씩 자른다. 
 
@@ -64,6 +69,52 @@ function message() {
 		} else {
 			//끝나면 반복종료 
 			clearInterval(tyInt);
+			document.getElementById("picture_button").style.display = 'inline-block';
 		}
 	}
 }
+
+function messagehidden() {
+	document.getElementById("typingafter").style.display = 'none';
+	document.getElementById("message_button").style.display = 'inline-block';
+	document.getElementById("picture_button").style.display = 'inline-block';
+}
+
+function picture() {
+	document.getElementById("message_button").style.display = 'none';
+	document.getElementById("picture_button").style.display = 'none';
+	document.getElementById("picturediv").style.display = 'contents';
+
+}
+
+function pictureclick(obj) {
+
+	var path = $(obj).attr('src');
+
+	$(".bigPictureWrapper").css("display", "flex").show();
+
+	$(".bigPicture")
+		.html("<img src='" + path + "' >")
+		.animate({ width: '100%', height: '100%' }, 1000);
+		
+		
+		
+	$(".bigPictureWrapper").on("click", function() {
+		
+	});//end bigWrapperClick event
+
+
+}
+
+
+function bigclose() {
+
+$(".bigPicture").animate({ width: '0%', height: '0%' }, 1000);
+		setTimeout(function() {
+			$('.bigPictureWrapper').hide();
+		}, 1000);
+
+}
+
+
+
