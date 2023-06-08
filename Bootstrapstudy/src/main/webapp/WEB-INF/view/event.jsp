@@ -23,7 +23,7 @@
 
 	<div class="button_container">
 		<p class="description">イベント ページ</p>
-		<button class="btn" onclick="location.href='event_main'">
+		<button class="btn" onclick="location.href='countdown'">
 			<span>Click me!</span>
 		</button>
 	

@@ -32,5 +32,11 @@ public class mainController {
 		return "login";
 	}
 	
+	@RequestMapping(value = {"/countdown"}, method=RequestMethod.GET)
+	public String countdown(HttpServletRequest request) {
+		System.out.println("go to countdown boot");
+		return "countdown";
+	}
+	
 
 }
