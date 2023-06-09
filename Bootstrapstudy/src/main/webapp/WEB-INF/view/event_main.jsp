@@ -37,7 +37,7 @@
 <body>
 	<div class="cover">
 		<img class="animate__animated animate__tada" id="animate_id" alt=""
-			src="resources/video/any2.gif" onclick="imgclick()">
+			src="resources/video/any4.gif" onclick="imgclick()">
 	</div>
 
 	<div class="content">
@@ -95,6 +95,7 @@
 				alt="" src="resources/img/back-rose1.jpg"
 				onclick="pictureclick(this)">
 		</div>
+		
 
 	</div>
 	<div class='bigPictureWrapper' onclick="bigclose()">

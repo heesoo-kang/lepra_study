@@ -16,6 +16,9 @@ body {
 
 .cover {
 	height: 100%;
+	margin-right:50%;
+	margin-bottom:30%;
+	width:50%;
 }
 
 .content {
@@ -736,5 +739,13 @@ body {
 	width: 600px;
 }
 
+#animate_id{
+	width: 200%;
 
+}
 
+.backpicture{
+	z-index: 1;
+    margin: 0 auto;
+    margin-top: 200%;
+}

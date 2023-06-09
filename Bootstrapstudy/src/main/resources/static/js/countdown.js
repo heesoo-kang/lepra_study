@@ -1,6 +1,5 @@
 const nums = document.querySelectorAll('.nums span');
 const counter = document.querySelector('.counter');
-const finalMessage = document.querySelector('.final');
 const repl = document.getElementById('replay');
 
 runAnimation();
@@ -11,7 +10,6 @@ function hrefLink() {
 }
 function resetDOM() {
 	counter.classList.remove('hide');
-	finalMessage.classList.remove('show');
 
 	nums.forEach(num => {
 		num.classList.value = '';
@@ -31,14 +29,10 @@ function runAnimation() {
 				num.nextElementSibling.classList.add('in');
 			} else {
 				counter.classList.add('hide');
-				finalMessage.classList.add('show');
+	
 				 hrefLink();
 			}
 		});
 	});
 }
 
-repl.addEventListener('click', () => {
-	resetDOM();
-	runAnimation();
-});

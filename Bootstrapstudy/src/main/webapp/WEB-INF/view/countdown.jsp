@@ -29,12 +29,8 @@
 			<span class="in">5</span> <span>4</span> <span>3</span> <span>2</span>
 			<span>1</span> <span>0</span>
 		</div>
-		<h2>準備!</h2>
 	</div>
-	<div class="final">
-		<h1>GO</h1>
-		<button id="replay">replay</button>
-	</div>
+
 	<script type="text/javascript" src="resources/js/countdown.js"></script>
 </body>
 </html>
